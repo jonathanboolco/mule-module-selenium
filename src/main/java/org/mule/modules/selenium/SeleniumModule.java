@@ -121,7 +121,7 @@ public class SeleniumModule {
      * @param id              The value of the "id" attribute to search for
      * @param linkText        The exact text to match against
      * @param partialLinkText The text to match against
-     * @param name            The value of the "name" attribute to search for
+     * @param elementName            The value of the "name" attribute to search for
      * @param tagName         The element's tagName
      * @param xpathExpression The xpath to use
      * @param className       The value of the "class" attribute to search for
@@ -131,18 +131,18 @@ public class SeleniumModule {
     public List<WebElement> findElements(@Optional String id,
                                          @Optional String linkText,
                                          @Optional String partialLinkText,
-                                         @Optional String name,
+                                         @Optional String elementName,
                                          @Optional String tagName,
                                          @Optional String xpathExpression,
                                          @Optional String className) {
 
         if (id == null && linkText == null && partialLinkText == null &&
-                name == null && tagName == null && xpathExpression == null &&
+        		elementName == null && tagName == null && xpathExpression == null &&
                 className == null) {
             throw new IllegalArgumentException("At least one find criteria must be specified.");
         }
 
-        if (!onlyOne(id, linkText, partialLinkText, name, tagName, xpathExpression, className)) {
+        if (!onlyOne(id, linkText, partialLinkText, elementName, tagName, xpathExpression, className)) {
             throw new IllegalArgumentException("Only one attribute can be used");
         }
 
@@ -152,8 +152,8 @@ public class SeleniumModule {
             return webDriver.findElements(By.linkText(linkText));
         } else if (partialLinkText != null) {
             return webDriver.findElements(By.partialLinkText(partialLinkText));
-        } else if (name != null) {
-            return webDriver.findElements(By.name(name));
+        } else if (elementName != null) {
+            return webDriver.findElements(By.name(elementName));
         } else if (tagName != null) {
             return webDriver.findElements(By.tagName(tagName));
         } else if (xpathExpression != null) {
@@ -176,7 +176,7 @@ public class SeleniumModule {
      * @param id              The value of the "id" attribute to search for
      * @param linkText        The exact text to match against
      * @param partialLinkText The text to match against
-     * @param name            The value of the "name" attribute to search for
+     * @param elementName            The value of the "name" attribute to search for
      * @param tagName         The element's tagName
      * @param xpathExpression The xpath to use
      * @param className       The value of the "class" attribute to search for   * @return The first matching element on the current page
@@ -188,18 +188,18 @@ public class SeleniumModule {
     public WebElement findElement(@Optional String id,
                                   @Optional String linkText,
                                   @Optional String partialLinkText,
-                                  @Optional String name,
+                                  @Optional String elementName,
                                   @Optional String tagName,
                                   @Optional String xpathExpression,
                                   @Optional String className) {
 
         if (id == null && linkText == null && partialLinkText == null &&
-                name == null && tagName == null && xpathExpression == null &&
+        		elementName == null && tagName == null && xpathExpression == null &&
                 className == null) {
             throw new IllegalArgumentException("At least one find criteria must be specified.");
         }
 
-        if (!onlyOne(id, linkText, partialLinkText, name, tagName, xpathExpression, className)) {
+        if (!onlyOne(id, linkText, partialLinkText, elementName, tagName, xpathExpression, className)) {
             throw new IllegalArgumentException("Only one attribute can be used");
         }
 
@@ -209,8 +209,8 @@ public class SeleniumModule {
             return webDriver.findElement(By.linkText(linkText));
         } else if (partialLinkText != null) {
             return webDriver.findElement(By.partialLinkText(partialLinkText));
-        } else if (name != null) {
-            return webDriver.findElement(By.name(name));
+        } else if (elementName != null) {
+            return webDriver.findElement(By.name(elementName));
         } else if (tagName != null) {
             return webDriver.findElement(By.tagName(tagName));
         } else if (xpathExpression != null) {
@@ -323,12 +323,12 @@ public class SeleniumModule {
      * {@sample.xml ../../../doc/mule-module-selenium.xml.sample selenium:get-attribute}
      *
      * @param element Element located at the payload of the message
-     * @param name    The name of the attribute.
+     * @param attributeName    The name of the attribute.
      * @return The attribute's current value or null if the value is not set.
      */
     @Processor
-    public String getAttribute(@Payload WebElement element, String name) {
-        return element.getAttribute(name);
+    public String getAttribute(@Payload WebElement element, String attributeName) {
+        return element.getAttribute(attributeName);
     }
 
     /**
