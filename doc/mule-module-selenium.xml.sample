@@ -76,3 +76,27 @@
 
 </mule>
 <!-- END_INCLUDE(selenium:until) -->
+<!-- BEGIN_INCLUDE(selenium:confirm-alert) -->
+<selenium:confirm-alert/>
+<!-- END_INCLUDE(selenium:confirm-alert) -->
+<!-- BEGIN_INCLUDE(selenium:dismiss-alert) -->
+<selenium:dismiss-alert/>
+<!-- END_INCLUDE(selenium:dismiss-alert) -->
+<!-- BEGIN_INCLUDE(selenium:execute-javascript) -->
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:selenium="http://www.mulesoft.org/schema/mule/selenium"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+        http://www.mulesoft.org/schema/mule/selenium http://www.mulesoft.org/schema/mule/selenium/current/mule-selenium.xsd">
+		
+    <flow name="testJavascript">
+		<selenium:execute-javascript>
+			<expression-transformer evaluator="string" expression="alert('test');"/>
+		</selenium:execute-javascript>
+    </flow>
+
+</mule>
+<!-- END_INCLUDE(selenium:execute-javascript) -->

@@ -10,14 +10,16 @@
 package org.mule.modules.selenium;
 
 import org.mule.api.MuleEvent;
-import org.mule.construct.Flow;
-import org.mule.tck.FunctionalTestCase;
-import org.mule.tck.AbstractMuleTestCase;
+import org.mule.api.processor.MessageProcessor;
+import org.mule.tck.junit4.FunctionalTestCase;
 
 import org.junit.Test;
 
 public class SeleniumModuleTest extends FunctionalTestCase {
 
+	protected MessageProcessor flow;
+	protected MuleEvent response;
+	
     @Override
     protected String getConfigResources() {
         return "mule-config.xml";
@@ -37,11 +39,9 @@ public class SeleniumModuleTest extends FunctionalTestCase {
      */
      protected <T> void runFlowAndExpect(String flowName, T expect) throws Exception
      {
-         Flow flow = lookupFlowConstruct(flowName);
-         MuleEvent event = AbstractMuleTestCase.getTestEvent(null);
-         MuleEvent responseEvent = flow.process(event);
-
-         assertEquals(expect, responseEvent.getMessage().getPayload());
+        flow = (MessageProcessor) muleContext.getRegistry().lookupFlowConstruct(flowName);
+         MuleEvent responseEvent = flow.process(getTestEvent(null));
+         assert(expect.equals(responseEvent.getMessage().getPayload()));
      }
 
      /**
@@ -54,21 +54,12 @@ public class SeleniumModuleTest extends FunctionalTestCase {
      */
      protected <T, U> void runFlowWithPayloadAndExpect(String flowName, T expect, U payload) throws Exception
      {
-         Flow flow = lookupFlowConstruct(flowName);
-         MuleEvent event = AbstractMuleTestCase.getTestEvent(payload);
-         MuleEvent responseEvent = flow.process(event);
+         flow = (MessageProcessor) muleContext.getRegistry().lookupFlowConstruct(flowName);
+         MuleEvent responseEvent = flow.process(getTestEvent(payload));
 
-         assertEquals(expect, responseEvent.getMessage().getPayload());
+         assert(expect.equals(responseEvent.getMessage().getPayload()));
      }
 
-     /**
-      * Retrieve a flow by name from the registry
-      *
-      * @param name Name of the flow to retrieve
-      */
-     protected Flow lookupFlowConstruct(String name)
-     {
-         return (Flow) AbstractMuleTestCase.muleContext.getRegistry().lookupFlowConstruct(name);
-     }
+
      
 }

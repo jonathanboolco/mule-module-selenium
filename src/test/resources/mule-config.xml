@@ -11,7 +11,7 @@
 
     <flow name="testQueryGoogle">
         <selenium:get url="http://www.google.com"/>
-        <selenium:find-element name="q"/>
+        <selenium:find-element elementName="q"/>
         <selenium:send-keys keys="Cheese!"/>
         <selenium:submit/>
         <selenium:until timeOutInSeconds="10">

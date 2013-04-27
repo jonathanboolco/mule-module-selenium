@@ -16,8 +16,10 @@ import org.mule.api.annotations.Processor;
 import org.mule.api.annotations.param.Default;
 import org.mule.api.annotations.param.Optional;
 import org.mule.api.annotations.param.Payload;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -124,6 +126,7 @@ public class SeleniumModule {
      * @param elementName            The value of the "name" attribute to search for
      * @param tagName         The element's tagName
      * @param xpathExpression The xpath to use
+     * @param cssSelectorSyntax The css expression to use
      * @param className       The value of the "class" attribute to search for
      * @return A list of all {@link WebElement}s, or an empty list if nothing matches
      */
@@ -134,15 +137,16 @@ public class SeleniumModule {
                                          @Optional String elementName,
                                          @Optional String tagName,
                                          @Optional String xpathExpression,
+                                         @Optional String cssSelectorSyntax,
                                          @Optional String className) {
 
         if (id == null && linkText == null && partialLinkText == null &&
         		elementName == null && tagName == null && xpathExpression == null &&
-                className == null) {
+                className == null && cssSelectorSyntax == null) {
             throw new IllegalArgumentException("At least one find criteria must be specified.");
         }
 
-        if (!onlyOne(id, linkText, partialLinkText, elementName, tagName, xpathExpression, className)) {
+        if (!onlyOne(id, linkText, partialLinkText, elementName, tagName, xpathExpression, className, cssSelectorSyntax)) {
             throw new IllegalArgumentException("Only one attribute can be used");
         }
 
@@ -158,6 +162,8 @@ public class SeleniumModule {
             return webDriver.findElements(By.tagName(tagName));
         } else if (xpathExpression != null) {
             return webDriver.findElements(By.xpath(xpathExpression));
+        } else if (cssSelectorSyntax != null) {
+            return webDriver.findElements(By.cssSelector(cssSelectorSyntax));
         } else if (className != null) {
             return webDriver.findElements(By.className(className));
         }
@@ -179,6 +185,7 @@ public class SeleniumModule {
      * @param elementName            The value of the "name" attribute to search for
      * @param tagName         The element's tagName
      * @param xpathExpression The xpath to use
+     * @param cssSelectorSyntax The css expression to use
      * @param className       The value of the "class" attribute to search for   * @return The first matching element on the current page
      * @return A singlel {@link WebElement}, or null if nothing matches
      * @throws org.openqa.selenium.NoSuchElementException
@@ -191,15 +198,16 @@ public class SeleniumModule {
                                   @Optional String elementName,
                                   @Optional String tagName,
                                   @Optional String xpathExpression,
+                                  @Optional String cssSelectorSyntax,
                                   @Optional String className) {
 
         if (id == null && linkText == null && partialLinkText == null &&
         		elementName == null && tagName == null && xpathExpression == null &&
-                className == null) {
+                className == null && cssSelectorSyntax == null) {
             throw new IllegalArgumentException("At least one find criteria must be specified.");
         }
 
-        if (!onlyOne(id, linkText, partialLinkText, elementName, tagName, xpathExpression, className)) {
+        if (!onlyOne(id, linkText, partialLinkText, elementName, tagName, xpathExpression, className, cssSelectorSyntax)) {
             throw new IllegalArgumentException("Only one attribute can be used");
         }
 
@@ -215,6 +223,8 @@ public class SeleniumModule {
             return webDriver.findElement(By.tagName(tagName));
         } else if (xpathExpression != null) {
             return webDriver.findElement(By.xpath(xpathExpression));
+        } else if (cssSelectorSyntax != null) {
+            return webDriver.findElement(By.cssSelector(cssSelectorSyntax));
         } else if (className != null) {
             return webDriver.findElement(By.className(className));
         }
@@ -433,6 +443,62 @@ public class SeleniumModule {
         });
     }
 
+    /**
+     * Accept any active javascript alert
+     * <p/>
+     * {@sample.xml ../../../doc/mule-module-selenium.xml.sample selenium:confirm-alert}
+     *
+     */
+    @Processor
+    public void confirmAlert() {
+        try{
+            Alert alert = webDriver.switchTo().alert();
+            alert.accept();
+        }catch(Exception e){
+            logger.error(e.getMessage());
+        }
+    }
+
+    /**
+     * Dismiss any active javascript alert
+     * <p/>
+     * {@sample.xml ../../../doc/mule-module-selenium.xml.sample selenium:dismiss-alert}
+     *
+     */
+    @Processor
+    public void dismissAlert() {
+        try{
+            Alert alert = webDriver.switchTo().alert();
+            alert.dismiss();
+        }catch(Exception e){
+            logger.error(e.getMessage());
+        }
+    }
+
+    /**
+     * Executes provided javascript and returns the result
+     * elements. Text entry elements are INPUT and TEXTAREA elements.
+     * <p/>
+     * {@sample.xml ../../../doc/mule-module-selenium.xml.sample selenium:execute-javascript}
+     *
+     * @param nestedProcessor processor that returns a string value
+     * @return The result of the execution
+    */
+    @Processor
+    public Object executeJavascript(NestedProcessor nestedProcessor) {
+    	
+    	String script;
+		try {
+			script = (String)nestedProcessor.process();
+	        JavascriptExecutor js = (JavascriptExecutor)webDriver;
+	        return js.executeScript(script);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return null;
+		}
+
+    }
+    
     private boolean onlyOne(String... args) {
         int i = 0;
         for (String arg : args) {
